@@ -16,9 +16,9 @@ app.use(session({
 
 // MySQL 연결 설정
 const connection = mysql.createConnection({
-  host     : '127.0.0.1',
-  user     : 'root',
-  password : 'tmddus0307',
+  host     : 'database-ensor.cufcntrxete1.ap-northeast-2.rds.amazonaws.com',
+  user     : 'admin',
+  password : 'tmddus0307*',
   database : 'ensor',
   port : '3306'
 });
