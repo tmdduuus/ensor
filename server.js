@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const session = require('express-session');
 const axios = require('axios');
 const mysql = require('mysql2');
@@ -12,6 +13,10 @@ app.use(session({
   secret: '0307', // 세션 암호화를 위한 비밀키
   resave: false, // 세션 데이터의 저장 여부를 지정
   saveUninitialized: false, // 초기화되지 않은 세션을 저장 여부를 지정
+}));
+
+app.use(cors({
+  origin: '*', // 모든 출처 허용 옵션. true 를 써도 된다.
 }));
 
 // MySQL 연결 설정
