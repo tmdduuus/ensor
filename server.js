@@ -16,9 +16,9 @@ app.use(session({
 
 // MySQL 연결 설정
 const connection = mysql.createConnection({
-  host     : 'database-ensor.cufcntrxete1.ap-northeast-2.rds.amazonaws.com',
-  user     : 'admin',
-  password : 'tmddus0307*',
+  host     : '127.0.0.1',
+  user     : 'root',
+  password : 'tmddus0307',
   database : 'ensor',
   port : '3306'
 });
@@ -27,10 +27,9 @@ app.use(express.json());
 app.get('/', function(req, res){
   res.send('ensor');
 })
-//const accessToken = 'DJgqYZGib_uTKHWafx9C7TJFWztijKGhf27vPPXNCj11GQAAAYi9Omjr';
 // 로그인
 app.post('/login', async (req, res) => {
-    const { accessToken } = req.query;
+    const { accessToken } = req.body;
     
     try {
       // 카카오 API를 통해 사용자 정보 요청
@@ -251,7 +250,7 @@ connection.connect((error) => {
 //////////////////////////////////////////////////////
 
 // 비건 인증 정보 목록 list
-app.post('/list/vegan', (req, res) => {
+app.get('/list/vegan', (req, res) => {
     // MySQL에서 정보를 조회하는 쿼리
     const query = 'SELECT * FROM inform where category = 1';
   
@@ -294,13 +293,13 @@ console.log(hash.checkHash("10001").call());*/
 
 // QR 코드 데이터에 해당하는 결과 조회
 app.get('/censor', (req, res) => {
-    const qrCodeData = req.query.qrCodeData;
+    const qrCodeData = req.body.qrCodeData;
 
     // 블록체인 결과
     //const tfresult = hash.checkHash(qrCodeData).call();
     
     // MySQL 쿼리 실행
-    const query = `SELECT * FROM inform WHERE censorID = '${qrCodeData}`;
+    const query = `SELECT * FROM inform WHERE censorID = ${qrCodeData}`;
     let tfresult = false;
   
     connection.query(query, (err, results) => {
@@ -319,8 +318,8 @@ app.get('/censor', (req, res) => {
 
 // qr코드 인증 정보 저장하기 (버튼)
 app.post('/save', (req, res) => {
-  const qrCodeData = req.query.qrCodeData;
-  const productName = req.query.productName;
+  const qrCodeData = req.body.qrCodeData;
+  const productName = req.body.productName;
   const data = new Array(5);
  
   const kakaoUserInfo = req.session.kakaoUserInfo;
@@ -333,7 +332,7 @@ app.post('/save', (req, res) => {
     console.log('MySQL 연결 성공');
   
     // SELECT 문 실행
-    connection.query(`SELECT * FROM inform WHERE censorID = '${qrCodeData}`, (error, results) => {
+    connection.query(`SELECT * FROM inform WHERE censorID = ${qrCodeData}`, (error, results) => {
       if (error) {
         console.error('SELECT 문 실행 실패:', error);
         return;
@@ -358,7 +357,7 @@ app.post('/save', (req, res) => {
           return;
         }else {
           // 검색 결과 반환
-          res.json(results);
+          res.json({message:"저장 성공", result : values});
         }
   
         console.log('INSERT 문 실행 성공');
@@ -374,7 +373,7 @@ app.get('/savelist', (req, res) =>{
   const kakaoUserInfo = req.session.kakaoUserInfo;
   
   // MySQL 쿼리 실행
-  const query = `SELECT * FROM savelist WHERE kakao_id = '${kakaoUserInfo.kakao_id}'`;
+  const query = `SELECT * FROM savelist WHERE kakao_id = ${kakaoUserInfo.kakao_id}`;
   
   connection.query(query, (err, results) => {
     if (err) {
