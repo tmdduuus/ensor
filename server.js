@@ -404,3 +404,19 @@ var hash = Contract.at("0x78B1f4cf88C2cF94CFf1Ea772648f4D7D18131B9");
 console.log(hash.checkHash("10001").call());
 
 })*/
+
+var Web3 = require("web3");
+var web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545")); 
+
+var helloabi = [{"inputs":[],"name":"printHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}];
+var helloContract = web3.eth.contract(helloabi);
+var hello = helloContract.at("0xaCD58c434EE223367FFc5B41D72d1e0E6052A6EE");
+
+console.log(web3.eth.accounts[0]);
+console.log(web3.eth.getBalance(web3.eth.accounts[0]));
+console.log(hello.printHello.call());
+
+app.get('/hello', (req, res)=>{
+  var result = hello.printHello.call();
+  res.send(result);
+})
