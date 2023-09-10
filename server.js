@@ -410,7 +410,7 @@ var web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
 
 var helloabi = [{"inputs":[],"name":"printHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}];
 var helloContract = web3.eth.contract(helloabi, {from : web3.eth.accounts[0]});
-var hello = helloContract.at("0x5d30551903389b57744Cf31E34C1Ba8aa43a5eBc");
+var hello = helloContract.at("0x289aC693d47Ab216992D05F8ebbb22f04fAfc6f3");
 
 console.log(web3.eth.accounts[0]);
 console.log(web3.eth.getBalance(web3.eth.accounts[0]));
