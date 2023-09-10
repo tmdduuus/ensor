@@ -406,11 +406,11 @@ console.log(hash.checkHash("10001").call());
 })*/
 
 var Web3 = require("web3");
-var web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545")); 
+var web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545")); 
 
 var helloabi = [{"inputs":[],"name":"printHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}];
 var helloContract = web3.eth.contract(helloabi, {from : web3.eth.accounts[0]});
-var hello = helloContract.at("0xaCD58c434EE223367FFc5B41D72d1e0E6052A6EE");
+var hello = helloContract.at("0x5d30551903389b57744Cf31E34C1Ba8aa43a5eBc");
 
 console.log(web3.eth.accounts[0]);
 console.log(web3.eth.getBalance(web3.eth.accounts[0]));
