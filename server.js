@@ -285,41 +285,147 @@ app.get('/list/environment', (req, res) => {
 });
 
 //////////////////////////////////////////
-/*
-var Web3 = require('web3');
-var web3 = new Web3();
-web3.setProvider(new web3.providers.HttpProvider("http://127.0.0.1:8545"));
-console.log(web3.eth.accounts[0]);
-console.log(web3.eth.getBalance(web3.eth.accounts[0]));
-var abi = [{"inputs":[{"internalType":"string","name":"_hash","type":"string"}],"name":"checkHash","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"hashDataMap","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_hash","type":"string"}],"name":"saveHash","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-var Contract = web3.eth.contract(abi);
-var hash = Contract.at("0x78B1f4cf88C2cF94CFf1Ea772648f4D7D18131B9");
-console.log(hash.checkHash("10001").call());*/
+
+var Web3 = require("web3");
+var web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
+var hashabi = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_hash",
+				"type": "string"
+			}
+		],
+		"name": "checkHash",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_hash",
+				"type": "string"
+			}
+		],
+		"name": "saveHash",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "hashDataMap",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "printHello",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "printHi",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "printResult",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "result",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+var hashContract = web3.eth.contract(hashabi);
+var hash = hashContract.at("0x00E2cA6c8030ac303D595F2c9Fc42b32F8445DfE");
 
 // QR 코드 데이터에 해당하는 결과 조회
 app.get('/censor', (req, res) => {
     const qrCodeData = req.body.qrCodeData;
+    const codeNum = qrCodeData.slice(0, 5);
 
     // 블록체인 결과
-    //const tfresult = hash.checkHash(qrCodeData).call();
+    hash.checkHash(qrCodeData, {from : web3.eth.accounts[0]});
+    const tfresult = hash.printResult.call();
     
     // MySQL 쿼리 실행
-    const query = `SELECT * FROM inform WHERE censorID = ${qrCodeData}`;
-    let tfresult = false;
+    const query = `SELECT * FROM inform WHERE censorID = ${codeNum}`;
   
     connection.query(query, (err, results) => {
       if (err) {
         console.error('Error executing MySQL query:', err);
-        res.status(500).json({ error: 'Internal Server Error' });
+        res.status(500).json({ error: 'Internal Server Error : censor' });
       } else {
         // 검색 결과 반환
-        if(results.length > 0){
-          tfresult = true;
+        if(tfresult == "success"){
+          res.status(200).json({tfresult, results});
+        }else if(tfresult == "failure"){
+          res.status(200).json({tfresult});
+        }else{
+          res.status(500).json({message:"잘못된 데이터"});
         }
-        res.status(200).json({tfresult, results});
       }
     });
 });
+
+// 블록체인에 데이터 저장
+app.post('/savehash', (req, res) =>{
+  const hashData = req.body.hashData;
+
+  hash.saveHash(hashData, {from : web3.eth.accounts[0]});
+  res.send("success");
+})
 
 // qr코드 인증 정보 저장하기 (버튼)
 app.post('/save', (req, res) => {
@@ -390,24 +496,8 @@ app.get('/savelist', (req, res) =>{
     }
   });
 })
-/*
-app.post('/remix', (req,res)=>{
-  
-var Web3 = require('web3');
-var web3 = new Web3();
-web3.setProvider(new web3.providers.HttpProvider("http://127.0.0.1:8545"));
-console.log(web3.eth.accounts[0]);
-console.log(web3.eth.getBalance(web3.eth.accounts[0]));
-var abi = [{"inputs":[{"internalType":"string","name":"_hash","type":"string"}],"name":"checkHash","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"hashDataMap","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"_hash","type":"string"}],"name":"saveHash","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-var Contract = web3.eth.contract(abi);
-var hash = Contract.at("0x78B1f4cf88C2cF94CFf1Ea772648f4D7D18131B9");
-console.log(hash.checkHash("10001").call());
 
-})*/
-
-var Web3 = require("web3");
-var web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545")); 
-
+// 블록체인 통신 테스트
 var helloabi = [{"inputs":[],"name":"printHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}];
 var helloContract = web3.eth.contract(helloabi, {from : web3.eth.accounts[0]});
 var hello = helloContract.at("0x289aC693d47Ab216992D05F8ebbb22f04fAfc6f3");
@@ -420,3 +510,4 @@ app.get('/hello', (req, res)=>{
   var result = hello.printHello.call();
   res.send(result);
 })
+
