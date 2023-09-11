@@ -498,16 +498,12 @@ app.get('/savelist', (req, res) =>{
 })
 
 // 블록체인 통신 테스트
-var helloabi = [{"inputs":[],"name":"printHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}];
-var helloContract = web3.eth.contract(helloabi, {from : web3.eth.accounts[0]});
-var hello = helloContract.at("0x289aC693d47Ab216992D05F8ebbb22f04fAfc6f3");
+// var helloabi = [{"inputs":[],"name":"printHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}];
+// var helloContract = web3.eth.contract(helloabi, {from : web3.eth.accounts[0]});
+// var hello = helloContract.at("0x289aC693d47Ab216992D05F8ebbb22f04fAfc6f3");
 
-console.log(web3.eth.accounts[0]);
-console.log(web3.eth.getBalance(web3.eth.accounts[0]));
-console.log(hello.printHello.call());
-
-app.get('/hello', (req, res)=>{
-  var result = hello.printHello.call();
-  res.send(result);
-})
+// app.get('/hello', (req, res)=>{
+//   var result = hello.printHello.call();
+//   res.send(result);
+// })
 
