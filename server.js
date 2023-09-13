@@ -44,12 +44,12 @@ app.post('/login', async (req, res) => {
       const user = await handleLoginOrSignup(userInfo);
       console.log(user);
       //JWT 토큰 생성
-      const token = jwt.sign({ userId: user.kakao_id }, secretKey, { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
 
       req.session.kakaoUserInfo = {
         // 카카오 로그인 정보
         accessToken : accessToken,
-        kakao_id: user.kakao_id,
+        kakao_id: user.id,
         nickname: user.nickname,
         email: user.email
       };    
