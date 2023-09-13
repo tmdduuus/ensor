@@ -156,6 +156,7 @@ async function getKakaoUserInfo(accessToken) {
       },
     });
     const userInfo = response.data;
+    console.log(userInfo);
     return userInfo;
   } catch (error) {
     console.error('Failed to get user info from Kakao API:', error);
@@ -181,6 +182,7 @@ async function handleLoginOrSignup(userInfo) {
           user = results[0];
         } else {
           // 새로운 사용자인 경우 회원가입 처리
+          console.log(userInfo);
           const newUser = {
             kakao_id: id,
             nickname: properties.nickname,
