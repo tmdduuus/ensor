@@ -410,7 +410,7 @@ app.post('/censor', (req, res) => {
         // 검색 결과 반환
         if(tfresult == "success"){
           // res.status(200).json({tfresult, results});
-          res.send(tfresult, results);
+          res.send(tfresult);
         }else if(tfresult == "failure"){
           res.status(200).json({tfresult});
         }else{
