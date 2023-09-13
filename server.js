@@ -407,10 +407,11 @@ app.post('/censor', (req, res) => {
         console.error('Error executing MySQL query:', err);
         res.status(500).json({ error: 'Internal Server Error : censor' });
       } else {
+        const send = {tfresult, results};
         // 검색 결과 반환
         if(tfresult == "success"){
           // res.status(200).json({tfresult, results});
-          res.send(tfresult);
+          res.send(send);
         }else if(tfresult == "failure"){
           res.status(200).json({tfresult});
         }else{
