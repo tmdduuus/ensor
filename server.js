@@ -434,7 +434,9 @@ app.post('/savehash', (req, res) =>{
 // qr코드 인증 정보 저장하기 (버튼)
 app.post('/save', (req, res) => {
   const qrCodeData = req.body.qrCodeData;
-  const productName = req.body.productName;
+  const codeNum = qrCodeData.slice(0, 5);
+  const productName = qrCodeData.slice(5);
+  console.log('[save] codeNum : ' + codeNum +' productName : ' + productName);
   const data = new Array(5);
  
   const kakaoUserInfo = req.session.kakaoUserInfo;
@@ -447,7 +449,7 @@ app.post('/save', (req, res) => {
     console.log('MySQL 연결 성공');
   
     // SELECT 문 실행
-    connection.query(`SELECT * FROM inform WHERE censorID = ${qrCodeData}`, (error, results) => {
+    connection.query(`SELECT * FROM inform WHERE censorID = ${codeNum}`, (error, results) => {
       if (error) {
         console.error('SELECT 문 실행 실패:', error);
         return;
