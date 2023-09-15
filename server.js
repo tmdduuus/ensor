@@ -39,6 +39,7 @@ app.post('/login', async (req, res) => {
     try {
       // 카카오 API를 통해 사용자 정보 요청
       const userInfo = await getKakaoUserInfo(accessToken);
+      console.log(userInfo);
   
       // 사용자 정보를 활용하여 로그인 또는 회원가입 처리
       const user = await handleLoginOrSignup(userInfo);
@@ -141,6 +142,7 @@ app.post('/withdrawal', (req, res) => {
 
 app.get('/mypage', (req, res) => {
   const kakaoUserInfo = req.session.kakaoUserInfo;
+  console.log(kakaoUserInfo);
   const email = kakaoUserInfo.email;
   const nickname = kakaoUserInfo.nickname;
 
