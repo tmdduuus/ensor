@@ -32,6 +32,9 @@ app.use(express.json());
 app.get('/', function(req, res){
   res.send('ensor');
 })
+
+var kakaoUser;
+
 // 로그인
 app.post('/login', async (req, res) => {
     const { accessToken } = req.body;
@@ -53,7 +56,15 @@ app.post('/login', async (req, res) => {
         kakao_id: userInfo.id,
         nickname: user.nickname,
         email: user.email
-      };    
+      };  
+      
+      kakaoUser = {
+        // 카카오 로그인 정보
+        accessToken : accessToken,
+        kakao_id: userInfo.id,
+        nickname: user.nickname,
+        email: user.email
+      };  
 
       // 로그인 또는 회원가입 성공 후 응답
       res.status(200).json({ success: true, message: 'Login successful', user, token });
@@ -77,6 +88,7 @@ app.post('/logout', (req, res) => {
     .then(() => {
       // 로그아웃 성공 처리
       delete req.session.kakaoUserInfo;
+      kakaoUser = "";
       res.status(200).json({ message: 'Logout successful' });
       console.log("로그아웃");
     })
@@ -88,6 +100,7 @@ app.post('/logout', (req, res) => {
     
     // 세션에서 카카오 로그인 정보를 제거
     delete req.session.kakaoUserInfo;
+    kakaoUser = "";
     /*
     // 카카오 로그아웃 URL 생성
     const kakaoLogoutUrl = `https://kauth.kakao.com/oauth/logout?client_id=YOUR_CLIENT_ID&logout_redirect_uri=YOUR_LOGOUT_REDIRECT_URI`;
@@ -132,6 +145,7 @@ app.post('/withdrawal', (req, res) => {
         res.status(200).json({ success: true, message: 'Withdrawal successful' });
         });
         delete req.session.kakaoUserInfo;
+        kakaoUser = "";
       })
       .catch(error => {
         // 회원 탈퇴 실패 처리
@@ -141,10 +155,12 @@ app.post('/withdrawal', (req, res) => {
 });
 
 app.get('/mypage', (req, res) => {
-  const kakaoUserInfo = req.session.kakaoUserInfo;
-  console.log(kakaoUserInfo);
-  const email = kakaoUserInfo.email;
-  const nickname = kakaoUserInfo.nickname;
+  var kakaoUserInfo = req.session.kakaoUserInfo;
+  // console.log("kakaoUserInfo : " + kakaoUserInfo);
+  const email = kakaoUser.email;
+  const nickname = kakaoUser.nickname;
+  console.log("email : " + email + " nickname : " + nickname);
+  console.log(kakaoUser);
 
   res.status(200).json({ email, nickname });
 })
@@ -465,7 +481,7 @@ app.post('/save', (req, res) => {
         }
       }
   
-      const values = [kakaoUserInfo.kakao_id, productName, data[0], data[1], data[2], data[3]];
+      const values = [kakaoUser.kakao_id, productName, data[0], data[1], data[2], data[3]];
 
       // SELECT 결과를 다른 테이블에 INSERT
       const insertQuery = `INSERT INTO savelist (kakao_id, productName, censorID, censorCom, censorText, imgUrl) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -490,9 +506,10 @@ app.post('/save', (req, res) => {
 // 나의 인증 정보 목록
 app.get('/savelist', (req, res) =>{
   const kakaoUserInfo = req.session.kakaoUserInfo;
+  console.log(kakaoUser);
   
   // MySQL 쿼리 실행
-  const query = `SELECT * FROM savelist WHERE kakao_id = ${kakaoUserInfo.kakao_id}`;
+  const query = `SELECT * FROM savelist WHERE kakao_id = ${kakaoUser.kakao_id}`;
   
   connection.query(query, (err, results) => {
     if (err) {
