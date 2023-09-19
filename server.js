@@ -691,6 +691,15 @@ app.get('/rate', (req, res) =>{
 	res.send({product : product.slice(5), rate : result, message : message});
 })
 
+// 블록체인에 별점 등록
+app.post('/star', (req, res)=>{
+  const product = req.body.product;
+  const star = req.body.star;
+  
+  hash.voteProduct(product, star, {from : web3.eth.accounts[0]});
+  console.log("별점 등록 성공");
+})
+
 // 블록체인 통신 테스트
 // var helloabi = [{"inputs":[],"name":"printHello","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"}];
 // var helloContract = web3.eth.contract(helloabi, {from : web3.eth.accounts[0]});
