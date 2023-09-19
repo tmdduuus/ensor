@@ -664,7 +664,7 @@ app.post('/write', (req, res)=>{
 
 // 리뷰 보기
 app.get('/review', (req, res)=>{
-	const product = req.body.product;
+	const product = req.query.product;
   
   const query = `SELECT nickname, review FROM review WHERE product = '${product.slice(5)}'`;
   connection.query(query, (err, results) => {
@@ -680,7 +680,7 @@ app.get('/review', (req, res)=>{
 
 // 별점 보기
 app.get('/rate', (req, res) =>{
-	const product = req.body.product;
+	const product = req.query.product;
 
 	hash.getRating(product, {from :web3.eth.accounts[0]});
 	const result = hash.printRating.call();
@@ -698,6 +698,7 @@ app.post('/star', (req, res)=>{
   
   hash.voteProduct(product, star, {from : web3.eth.accounts[0]});
   console.log("별점 등록 성공");
+  res.send("별점 등록 성공");
 })
 
 // 블록체인 통신 테스트
