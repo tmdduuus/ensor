@@ -281,8 +281,8 @@ app.get('/list/vegan', (req, res) => {
   
     connection.query(query, (error, results) => {
       if (error) {
-        console.error('Information retrieval error:', error);
-        res.status(500).json({ error: 'Failed to retrieve information' });
+        console.error('Error) /list/vegan SQL 에러:', error);
+        res.status(500).json({ error: 'Error) /list/vegan SQL 에러' });
       } else {
         res.status(200).json(results);
       }
@@ -296,8 +296,8 @@ app.get('/list/environment', (req, res) => {
   
     connection.query(query, (error, results) => {
       if (error) {
-        console.error('Information retrieval error:', error);
-        res.status(500).json({ error: 'Failed to retrieve information' });
+        console.error('Error) /list/environment SQL 에러 : ', error);
+        res.status(500).json({ error: 'Error) /list/environment SQL 에러' });
       } else {
         res.status(200).json(results);
       }
@@ -330,7 +330,38 @@ var hashabi = [
 				"type": "string"
 			}
 		],
+		"name": "getRating",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_hash",
+				"type": "string"
+			}
+		],
 		"name": "saveHash",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_hash",
+				"type": "string"
+			},
+			{
+				"internalType": "uint8",
+				"name": "rate",
+				"type": "uint8"
+			}
+		],
+		"name": "voteProduct",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -369,15 +400,15 @@ var hashabi = [
 	},
 	{
 		"inputs": [],
-		"name": "printHi",
+		"name": "printRating",
 		"outputs": [
 			{
-				"internalType": "string",
+				"internalType": "uint256",
 				"name": "",
-				"type": "string"
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "pure",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -388,6 +419,57 @@ var hashabi = [
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_hash",
+				"type": "string"
+			}
+		],
+		"name": "printVoteNumber",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "productRating",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "rating",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -405,10 +487,29 @@ var hashabi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"name": "voteNumber",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	}
 ];
 var hashContract = web3.eth.contract(hashabi);
-var hash = hashContract.at("0xC8627571f3160DF728C443Faa0d57853086dbcAF");
+var hash = hashContract.at("0x80bD66Ba923d5333286270C3707Fc87318d6570C");
 
 // QR 코드 데이터에 해당하는 결과 조회
 app.post('/censor', (req, res) => {
@@ -424,8 +525,8 @@ app.post('/censor', (req, res) => {
   
     connection.query(query, (err, results) => {
       if (err) {
-        console.error('Error executing MySQL query:', err);
-        res.status(500).json({ error: 'Internal Server Error : censor' });
+        console.error('Error) /censor SQL 에러:', err);
+        res.status(500).json({ error: 'Error) /censor SQL 에러' });
       } else {
         const send = {tfresult, results};
         // 검색 결과 반환
@@ -469,7 +570,7 @@ app.post('/save', (req, res) => {
     // SELECT 문 실행
     connection.query(`SELECT * FROM inform WHERE censorID = ${codeNum}`, (error, results) => {
       if (error) {
-        console.error('SELECT 문 실행 실패:', error);
+        console.error('Error) /save SELECT 문 실행 실패:', error);
         return;
       } else {
         console.log('조회된 데이터:', results);
@@ -513,13 +614,82 @@ app.get('/savelist', (req, res) =>{
   
   connection.query(query, (err, results) => {
     if (err) {
-      console.error('Error executing MySQL query:', err);
-      res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error) 나의 인증 정보 목록 SQL 에러 :', err);
+      res.status(500).json({ error: 'Error) 나의 인증 정보 목록 SQL 에러' });
     } else {
       // 검색 결과 반환
       res.json(results);
     }
   });
+})
+
+// 후기 작성 (별점 + 리뷰)
+app.post('/write', (req, res)=>{
+	const product = req.body.product;
+	const star = req.body.star;
+  const review = req.body.review;
+
+  // 블록체인에 별점 등록
+	hash.voteProduct(product, star, {from : web3.eth.accounts[0]});
+  console.log("별점 등록 성공");
+
+  // DB에 리뷰 등록
+  const insertquery = `INSERT INTO review (kakao_id, nickname, product, review) VALUES (?, ?, ?, ?)`;
+  const selectquery = `SELECT nickname, review FROM review WHERE product = '${product.slice(5)}' and kakao_id = '${kakaoUser.kakao_id}'`;
+  const values = [kakaoUser.kakao_id, kakaoUser.nickname, product.slice(5), review];
+
+  connection.query(selectquery, (error, results) => {
+    if (error) {
+        console.error('후기 작성 select 에러 발생:', error);
+        connection.end();
+        return;
+    }
+
+    if (results.length > 0) {
+        console.log('이미 리뷰를 작성하였습니다.');
+        res.send({message : "이미 리뷰를 작성하였습니다."});
+    } else {
+        // INSERT 문 실행
+        connection.query(insertquery, values, (error) => {
+            if (error) {
+                console.error('후기 작성 INSERT 에러 발생:', error);
+            } else {
+                console.log("후기 작성 완료");
+                res.send({message : "후기 작성 완료"});
+            }
+        });
+    }
+  });
+  
+})
+
+// 리뷰 보기
+app.get('/review', (req, res)=>{
+	const product = req.body.product;
+  
+  const query = `SELECT nickname, review FROM review WHERE product = '${product.slice(5)}'`;
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Error) 리뷰 보기 SQL 에러 :', err);
+      res.status(500).json({ error: 'Error) 리뷰 보기 SQL 에러' });
+    } else {
+      // 검색 결과 반환
+      res.json(results);
+    }
+  });
+})
+
+// 별점 보기
+app.get('/rate', (req, res) =>{
+	const product = req.body.product;
+
+	hash.getRating(product, {from :web3.eth.accounts[0]});
+	const result = hash.printRating.call();
+  var message = "안전";
+  if(result <= 2){
+    message = "위험";
+  }
+	res.send({product : product.slice(5), rate : result, message : message});
 })
 
 // 블록체인 통신 테스트
