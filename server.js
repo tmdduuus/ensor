@@ -629,10 +629,6 @@ app.post('/write', (req, res)=>{
 	const star = req.body.star;
   const review = req.body.review;
 
-  // 블록체인에 별점 등록
-	hash.voteProduct(product, star, {from : web3.eth.accounts[0]});
-  console.log("별점 등록 성공");
-
   // DB에 리뷰 등록
   const insertquery = `INSERT INTO review (kakao_id, nickname, product, review) VALUES (?, ?, ?, ?)`;
   const selectquery = `SELECT nickname, review FROM review WHERE product = '${product.slice(5)}' and kakao_id = '${kakaoUser.kakao_id}'`;
@@ -649,6 +645,9 @@ app.post('/write', (req, res)=>{
         console.log('이미 리뷰를 작성하였습니다.');
         res.send({message : "이미 리뷰를 작성하였습니다."});
     } else {
+        // 블록체인에 별점 등록
+	      hash.voteProduct(product, star, {from : web3.eth.accounts[0]});
+        console.log("별점 등록 성공");
         // INSERT 문 실행
         connection.query(insertquery, values, (error) => {
             if (error) {
