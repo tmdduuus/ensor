@@ -532,7 +532,7 @@ app.post('/censor', (req, res) => {
         // 검색 결과 반환
         if(tfresult == "success"){
           // res.status(200).json({tfresult, results});
-          res.send(send);
+          res.send({tfresult : tfresult, category : results.category, censorCom : results.censorCom, censorID : results.censorID, censorText : results.censorText, imgUrl : results.imgUrl});
         }else if(tfresult == "failure"){
           res.status(200).json({tfresult});
         }else{
