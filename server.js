@@ -513,6 +513,7 @@ var hash = hashContract.at("0xF273c9868758DC6e22498d6ca169DA7C9c76E906");
 
 // QR 코드 데이터에 해당하는 결과 조회
 app.post('/censor', (req, res) => {
+    console.log(req.body.qrCodeData);
     const qrCodeData = req.body.qrCodeData;
     const codeNum = qrCodeData.slice(0, 5);
 
