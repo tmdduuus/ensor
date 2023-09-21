@@ -643,7 +643,7 @@ app.post('/write', (req, res)=>{
 
     if (results.length > 0) {
         console.log('이미 리뷰를 작성하였습니다.');
-        res.status(201).send({message : "이미 리뷰를 작성하였습니다."});
+        res.status(202).send({ code : 202, message : "이미 리뷰를 작성하였습니다."});
     } else {
         // 블록체인에 별점 등록
 	      hash.voteProduct(product, star, {from : web3.eth.accounts[0]});
@@ -654,7 +654,7 @@ app.post('/write', (req, res)=>{
                 console.error('후기 작성 INSERT 에러 발생:', error);
             } else {
                 console.log("후기 작성 완료");
-                res.status(202).send({message : "후기 작성 완료"});
+                res.status(201).send({ code : 201, message : "후기 작성 완료"});
             }
         });
     }
