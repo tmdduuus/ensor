@@ -509,7 +509,7 @@ var hashabi = [
 	}
 ];
 var hashContract = web3.eth.contract(hashabi);
-var hash = hashContract.at("0x47712c4b83B98B5658999bCBae5a519B7e3FAF90");
+var hash = hashContract.at("0x884dac094B54De853DD4A839cC504d68A93f6e92");
 
 // QR 코드 데이터에 해당하는 결과 조회
 app.post('/censor', (req, res) => {
